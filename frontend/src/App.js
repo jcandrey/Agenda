@@ -13,6 +13,9 @@ function App() {
     <Router>
       <Navigation />
       <div className="container p-4">
+        <Route path="/" exact>
+          <NotesList />
+        </Route>
         <Route path="/edit/:id">
           <CreateNote />
         </Route>
@@ -21,9 +24,6 @@ function App() {
         </Route>
         <Route path="/user">
           <CreateditUser />
-        </Route>
-        <Route path="/" exact>
-          <NotesList />
         </Route>
       </div>
     </Router>

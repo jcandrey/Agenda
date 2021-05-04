@@ -33,11 +33,6 @@ export class Navigation extends Component {
                 </Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link" to="/edit/:id">
-                  Editar Nota
-                </Link>
-              </li>
-              <li className="nav-item">
                 <Link className="nav-link" to="/user">
                   Usuarios
                 </Link>

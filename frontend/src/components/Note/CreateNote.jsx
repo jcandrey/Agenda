@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { useParams } from "react-router-dom";
 
 export default function CreateNote() {
   const initialStateUser = [
@@ -18,6 +19,14 @@ export default function CreateNote() {
       cuerpo: "",
     },
   ];
+
+  let nota = {
+    userSelect: "",
+    titulo: "",
+    cuerpo: "",
+    fecha: "",
+  };
+
   const initialDate = {
     fecha: new Date(),
   };
@@ -25,13 +34,32 @@ export default function CreateNote() {
   const [users, setUsers] = useState(initialStateUser);
   const [notas, setNotas] = useState(initialStateNotas);
   const [date, setDate] = useState(initialDate);
+  const [edit, setEdit] = useState(false);
 
-  useEffect(() => obtenerUsers(), []);
+  const { id } = useParams();
+
+  useEffect(() => {
+    obtenerUsers();
+    console.log("params", id);
+    if (id) {
+      setEdit(true);
+      obtenerNota();
+    }
+  }, []);
 
   const obtenerUsers = async () => {
     const res = await axios.get("http://localhost:4000/api/users");
     setUsers(res.data);
     setNotas({ userSelect: res.data[0].nombre + " " + res.data[0].apellido });
+  };
+
+  const obtenerNota = async () => {
+    const res = await axios.get("http://localhost:4000/api/notes/" + id);
+    console.log("traer nota", res.data);
+    nota.titulo = res.data.titulo;
+    nota.cuerpo = res.data.cuerpo;
+    nota.autor = res.data.autor;
+    nota.fecha = res.data.fecha;
   };
 
   const onChangeDate = (date) => {
@@ -53,7 +81,12 @@ export default function CreateNote() {
       autor: notas.userSelect,
       fecha: date.fecha,
     };
-    await axios.post("http://localhost:4000/api/notes", newNote);
+    if (edit) {
+      console.log("put", id);
+      await axios.put("http://localhost:4000/api/notes/" + id, newNote);
+    } else {
+      await axios.post("http://localhost:4000/api/notes", newNote);
+    }
     window.location.href = "/";
   };
 
@@ -61,7 +94,7 @@ export default function CreateNote() {
     <div>
       <div className="col-md-6 offset-md-3">
         <div className="card card-body">
-          <h6>Crear Notas</h6>
+          <h6>Crear/Editar Notas</h6>
           <div className="form-group">
             <select
               className="form-control"
